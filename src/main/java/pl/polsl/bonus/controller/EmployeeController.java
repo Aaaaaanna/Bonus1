@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import pl.polsl.bonus.dto.EmployeeDTO;
+import pl.polsl.bonus.mapper.MapperImpl;
 import pl.polsl.bonus.model.Employee;
 import pl.polsl.bonus.repository.EmployeeJpaRepository;
 
@@ -23,32 +25,35 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeJpaRepository employeeRepository;
 	
+	@Autowired
+	private MapperImpl mapper;  
+	
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Employee> employeeList(){
-		return employeeRepository.findAll();
+	public List<EmployeeDTO> employeeList(){
+		return this.mapper.toEmployeeListDTO(employeeRepository.findAll(), true);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Employee create(@RequestBody Employee employee){
+	public EmployeeDTO create(@RequestBody Employee employee){
 		System.out.println(employee.getFirstName());
-		return employeeRepository.saveAndFlush(employee);
+		return this.mapper.toEmployeeDTO(employeeRepository.saveAndFlush(employee), true);
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public Employee get(@PathVariable Integer id){
-		return employeeRepository.findOne(id);
+	public EmployeeDTO get(@PathVariable Integer id){
+		return this.mapper.toEmployeeDTO(employeeRepository.findOne(id), true);
 	}
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public Employee update(@PathVariable Integer id, @RequestBody Employee employee){
+	public EmployeeDTO update(@PathVariable Integer id, @RequestBody Employee employee){
 		Employee existingEmployee = employeeRepository.findOne(id);
 		BeanUtils.copyProperties(employee, existingEmployee);
-		return employeeRepository.saveAndFlush(existingEmployee);
+		return this.mapper.toEmployeeDTO(employeeRepository.saveAndFlush(existingEmployee), true);
 	}
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public Employee delete(@PathVariable Integer id){
+	public EmployeeDTO delete(@PathVariable Integer id){
 		Employee existingEmployee = employeeRepository.findOne(id);
 		employeeRepository.delete(existingEmployee);
-		return existingEmployee;
+		return this.mapper.toEmployeeDTO(existingEmployee, true);
 		
 	}
 

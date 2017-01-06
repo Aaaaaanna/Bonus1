@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import pl.polsl.bonus.dto.TeamDTO;
+import pl.polsl.bonus.mapper.MapperImpl;
 import pl.polsl.bonus.model.Team;
 import pl.polsl.bonus.repository.TeamJpaRepository;
 
@@ -24,31 +26,34 @@ public class TeamController {
 	@Autowired
 	private TeamJpaRepository teamRepository;
 	
+	@Autowired
+	private MapperImpl mapper;
+	
 	@RequestMapping(value = "teams", method = RequestMethod.GET)
-	public List<Team> teamList(){
-		return teamRepository.findAll();
+	public List<TeamDTO> teamList(){
+		return this.mapper.toTeamListDTO(teamRepository.findAll(), true);
 	}
 	
 	@RequestMapping(value = "teams/{id}", method = RequestMethod.POST)
-	public Team create(@RequestBody Team team){
-		return teamRepository.saveAndFlush(team);
+	public TeamDTO create(@RequestBody Team team){
+		return this.mapper.toTeamDTO(teamRepository.saveAndFlush(team),true);
 	}
 	
 	@RequestMapping(value = "teams/{id}", method = RequestMethod.GET)
-	public Team get(@PathVariable Integer id){
-		return teamRepository.findOne(id);
+	public TeamDTO get(@PathVariable Integer id){
+		return this.mapper.toTeamDTO(teamRepository.findOne(id), true);
 	}
 	@RequestMapping(value = "teams/{id}", method = RequestMethod.PUT)
-	public Team update(@PathVariable Integer id, @RequestBody Team team){
+	public TeamDTO update(@PathVariable Integer id, @RequestBody Team team){
 		Team existingteam = teamRepository.findOne(id);
 		BeanUtils.copyProperties(team, existingteam);
-		return teamRepository.saveAndFlush(existingteam);
+		return this.mapper.toTeamDTO(teamRepository.saveAndFlush(existingteam), true);
 	}
 	@RequestMapping(value = "teams/{id}", method = RequestMethod.DELETE)
-	public Team delete(@PathVariable Integer id){
+	public TeamDTO delete(@PathVariable Integer id){
 		Team existingteam = teamRepository.findOne(id);
 		teamRepository.delete(existingteam);
-		return existingteam;
+		return this.mapper.toTeamDTO(existingteam, true);
 		
 	}
 

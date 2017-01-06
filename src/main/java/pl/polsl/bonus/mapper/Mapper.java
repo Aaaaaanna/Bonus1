@@ -9,10 +9,10 @@ import pl.polsl.bonus.model.Team;
 
 public interface Mapper {
 	
-	EmployeeDTO toEmployeeDTO (Employee employee);
-	TeamDTO toTeamDTO (Team team);
-	List <EmployeeDTO> toEmployeeListDTO (List <Employee> employees);
-	List <TeamDTO> toTeamListDTO (List <Team> teams);
+	EmployeeDTO toEmployeeDTO (Employee employee, Boolean context);
+	TeamDTO toTeamDTO (Team team, Boolean context);
+	List <EmployeeDTO> toEmployeeListDTO (List <Employee> employees, Boolean context);
+	List <TeamDTO> toTeamListDTO (List <Team> teams, Boolean context);
 	
 	
 }
