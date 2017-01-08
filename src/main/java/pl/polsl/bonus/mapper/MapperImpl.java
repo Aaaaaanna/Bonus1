@@ -66,4 +66,34 @@ public class MapperImpl implements Mapper {
 		}
 	}
 
+	@Override
+	public Employee fromEmployeeDTO(EmployeeDTO employeeDTO, Boolean context) {
+		if (employeeDTO == null )
+			return null;
+		else {
+			Employee employee = this.modelMapper.map(employeeDTO, Employee.class);
+			if (context)
+				employee.setTeam(fromTeamDTO(employeeDTO.getTeamId(), !context));
+			else employee.setTeam(null);
+			return employee;
+	
+		}
+			}
+
+	@Override
+	public Team fromTeamDTO(TeamDTO teamDTO, Boolean context) {
+		if (teamDTO == null)
+			return null;
+		else 
+		{
+			Team team = this.modelMapper.map(teamDTO, Team.class);
+			if (context)
+				team.setTeamManager(fromEmployeeDTO(teamDTO.getTeamManager(), !context));
+			else 
+				team.setTeamManager(null);
+			return team;
+		}
+			
+	}
+
 }

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name="employee")
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
+//@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
 public class Employee implements Serializable {
 
 	/**
@@ -32,14 +32,14 @@ public class Employee implements Serializable {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="EMPLOYEE_ID")
 	private Integer employeeId;
 
-	@JsonManagedReference
+//	@JsonManagedReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TEAM_ID")
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	//@JsonBackReference
 	private Team team;
 	

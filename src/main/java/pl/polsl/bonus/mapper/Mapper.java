@@ -13,6 +13,7 @@ public interface Mapper {
 	TeamDTO toTeamDTO (Team team, Boolean context);
 	List <EmployeeDTO> toEmployeeListDTO (List <Employee> employees, Boolean context);
 	List <TeamDTO> toTeamListDTO (List <Team> teams, Boolean context);
-	
+	Employee fromEmployeeDTO(EmployeeDTO employeeDTO, Boolean context);
+	Team fromTeamDTO(TeamDTO teamDTO, Boolean context);
 	
 }
