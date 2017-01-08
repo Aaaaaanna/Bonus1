@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.polsl.bonus.dto.EmployeeDTO;
@@ -19,7 +20,7 @@ import pl.polsl.bonus.repository.EmployeeJpaRepository;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/employees", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/employees", produces = MediaType.APPLICATION_JSON_VALUE )
 public class EmployeeController {
 
 	@Autowired
@@ -33,10 +34,14 @@ public class EmployeeController {
 		return this.mapper.toEmployeeListDTO(employeeRepository.findAll(), true);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public EmployeeDTO create(@RequestBody Employee employee){
+	@RequestMapping(method = RequestMethod.POST)
+	public Employee create(@RequestBody EmployeeDTO employee){
+		
+		Employee newEmployee = this.mapper.fromEmployeeDTO(employee, true);
+		System.out.println("Jestem tu! ");
 		System.out.println(employee.getFirstName());
-		return this.mapper.toEmployeeDTO(employeeRepository.saveAndFlush(employee), true);
+		return employeeRepository
+				.saveAndFlush(newEmployee);
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)

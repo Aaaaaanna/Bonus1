@@ -29,14 +29,14 @@ public class Team implements Serializable{
 
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="TEAM_ID")
 	private Integer teamId;
 
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TEAM_MANAGER_ID")
-	@JsonManagedReference
+	//@JsonManagedReference
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private Employee teamManager;
 
