@@ -12,15 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
 @Table(name="employee")
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
 public class Employee implements Serializable {
 
 	/**
@@ -32,15 +28,13 @@ public class Employee implements Serializable {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="EMPLOYEE_ID")
 	private Integer employeeId;
 
-	@JsonManagedReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TEAM_ID")
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-	//@JsonBackReference
 	private Team team;
 	
 	@Column(name = "FIRST_NAME")
@@ -127,8 +121,8 @@ public class Employee implements Serializable {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public void setMoblieNumber(String moblieNumber) {
-		this.mobileNumber = moblieNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public void setOfficeAddress(String officeAddress) {

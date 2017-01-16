@@ -9,7 +9,7 @@ public class EmployeeDTO {
 	@JsonProperty 
 	private Integer employeeId;
 	@JsonProperty
-	private Integer teamId;
+	private TeamDTO team;
 	@JsonProperty
 	private String firstName;
 	@JsonProperty
@@ -26,8 +26,8 @@ public class EmployeeDTO {
 	public Integer getEmployeeId() {
 		return employeeId;
 	}
-	public Integer getTeamId() {
-		return teamId;
+	public TeamDTO getTeam() {
+		return team;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -50,8 +50,8 @@ public class EmployeeDTO {
 	public void setEmployeeId(Integer employeeId) {
 		this.employeeId = employeeId;
 	}
-	public void setTeamId(Integer teamId) {
-		this.teamId = teamId;
+	public void setTeam(TeamDTO team) {
+		this.team = team;
 	}
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;

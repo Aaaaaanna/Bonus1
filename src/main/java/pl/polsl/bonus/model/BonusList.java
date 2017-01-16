@@ -1,5 +1,6 @@
 package pl.polsl.bonus.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,14 +10,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @Entity
-public class BonusList {
+@Table(name = "bonuslist")
+public class BonusList implements Serializable {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="BONUS_LIST_ID")
 	private Integer bonusListId;
 	
@@ -36,6 +44,8 @@ public class BonusList {
 	@Column(name="DESCRIPTION")
 	private String description;
 
+	@Column(name="BUDGET")
+	private Double budget;
 	public BonusList() {
 
 	}
@@ -86,6 +96,14 @@ public class BonusList {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Double getBudget() {
+		return budget;
+	}
+
+	public void setBudget(Double budget) {
+		this.budget = budget;
 	}
 
 }
