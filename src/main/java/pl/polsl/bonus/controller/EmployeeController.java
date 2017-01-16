@@ -19,6 +19,7 @@ import pl.polsl.bonus.mapper.MapperImpl;
 import pl.polsl.bonus.model.Employee;
 import pl.polsl.bonus.repository.EmployeeJpaRepository;
 
+
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/employees", produces = MediaType.APPLICATION_JSON_VALUE )
@@ -32,6 +33,7 @@ public class EmployeeController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public List<EmployeeDTO> employeeList(){
+		
 		return this.mapper.toEmployeeListDTO(employeeRepository.findAll(), true);
 	}
 	

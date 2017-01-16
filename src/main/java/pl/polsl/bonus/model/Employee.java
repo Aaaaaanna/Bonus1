@@ -54,10 +54,13 @@ public class Employee implements Serializable {
 	
 	@Column(name = "EMAIL_ADDRESS")
 	private String emailAddress;
-	/*
+
+	@Column(name = "LOGIN")
 	private String login;
+	
+	@Column(name = "PASSWORD")
 	private String password;
-*/
+
 	// getters
 	public Integer getEmployeeId() {
 		return this.employeeId;
@@ -140,4 +143,20 @@ public class Employee implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}*/
+
+	public String getLogin() {
+		return login;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }
