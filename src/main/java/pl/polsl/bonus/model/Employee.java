@@ -61,6 +61,9 @@ public class Employee implements Serializable {
 	@Column(name = "PASSWORD")
 	private String password;
 
+	@Column(name = "ROLE")
+	private String role; 
+	
 	// getters
 	public Integer getEmployeeId() {
 		return this.employeeId;
@@ -158,5 +161,13 @@ public class Employee implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 }
