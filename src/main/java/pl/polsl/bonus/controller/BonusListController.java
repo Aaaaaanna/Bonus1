@@ -37,33 +37,33 @@ public class BonusListController {
 
 	@Autowired
 	private BonusListJpaRepository bonusListRepository;
-	
-	@Autowired 
-	private EmployeeJpaRepository employeeRepository; 
-	
+
 	@Autowired
-	private TeamJpaRepository teamRepository; 
-	
+	private EmployeeJpaRepository employeeRepository;
+
+	@Autowired
+	private TeamJpaRepository teamRepository;
+
 	@Autowired
 	private NodeJpaRepository nodeRepository;
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	public List<BonusListDTO> bonusListList(){
+	public List<BonusListDTO> bonusListList() {
 		return this.mapper.toBonusesListDTO(bonusListRepository.findAll(), true);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> create(@RequestBody BonusListDTO bonusList){
-		try{
-			//znajdywanie teamu prezesa
+	public ResponseEntity<?> create(@RequestBody BonusListDTO bonusList) {
+		try {
+			// znajdywanie teamu prezesa
 			Team topTeam = teamRepository.findTopLevelTeam();
 			System.out.println(topTeam.getTeamName() + " " + topTeam.getTeamId());
-			//znajdywanie prezesa
+			// znajdywanie prezesa
 			List<Employee> employeeList = employeeRepository.findEmployeesByTeam(topTeam);
-			for(Employee e:employeeList){
+			for (Employee e : employeeList) {
 				System.out.println(e.getFirstName());
 			}
-			//Node prezesa
+			// Node prezesa
 			Node topNode = new Node();
 			topNode.setParentNode(null);
 			topNode.setEmployee(employeeList.get(0));
@@ -79,106 +79,136 @@ public class BonusListController {
 			topNode.setOwnBonus(0.0);
 			topNode.setTeamBonus(bonusList.getBudget());
 			topNode.setState("");
-			//dodanie Node'a prezeza
+			// dodanie Node'a prezeza
 			nodeRepository.saveAndFlush(topNode);
-			
-			//dodawanie nodow podrzednych
+
+			// dodawanie nodow podrzednych
 			addChildren(topNode);
-			
+
 			bonusListRepository.saveAndFlush(newBonusList);
-			
-			return new ResponseEntity<>(newBonusList,HttpStatus.OK);
-			//return new ResponseEntity<>(bonusList, HttpStatus.OK);
-		}
-		catch(Exception e){
+
+			return new ResponseEntity<>(newBonusList, HttpStatus.OK);
+			// return new ResponseEntity<>(bonusList, HttpStatus.OK);
+		} catch (Exception e) {
 			String errorMessage;
 			errorMessage = "Failed to add bonus";
 			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public BonusListDTO get(@PathVariable Integer id){
+	public BonusListDTO get(@PathVariable Integer id) {
 		return this.mapper.toBonusListDTO(bonusListRepository.findOne(id), true);
 	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public BonusList update(@PathVariable Integer id, @RequestBody BonusList bonusList){
+	public BonusList update(@PathVariable Integer id, @RequestBody BonusListDTO bonusListDTO) {
 		BonusList existingbonusList = bonusListRepository.findOne(id);
+		BonusList bonusList = this.mapper.fromBonusListDTO(bonusListDTO, true);
 		BeanUtils.copyProperties(bonusList, existingbonusList);
 		return bonusListRepository.saveAndFlush(existingbonusList);
 	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public BonusList delete(@PathVariable Integer id){
+	public BonusList delete(@PathVariable Integer id) {
 		BonusList existingbonusList = bonusListRepository.findOne(id);
 		bonusListRepository.delete(existingbonusList);
 		return existingbonusList;
-		
+
 	}
-	
+
 	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<?> updateNodes(@RequestBody List<NodeDTO> nodes ){
-		try{
-			List <Node> nodeList = new ArrayList<Node>();
+	public ResponseEntity<?> updateNodes(@RequestBody List<NodeDTO> nodes) {
+		try {
+			List<Node> nodeList = new ArrayList<Node>();
 			nodeList = this.mapper.fromNodeListDTO(nodes, true);
-			for (Node n:nodeList){
+			for (Node n : nodeList) {
 				Node existingNode = nodeRepository.findOne(n.getNodeId());
 				BeanUtils.copyProperties(n, existingNode);
 				nodeRepository.saveAndFlush(existingNode);
 			}
 			return new ResponseEntity<>("", HttpStatus.OK);
-			
-		}
-		catch(Exception e){
+
+		} catch (Exception e) {
 			String errorMessage;
 			errorMessage = "Failed to add bonus";
 			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-			
+
 		}
 	}
-	
-	
-	@RequestMapping(value="/{nodeId}/{employeeId}", method = RequestMethod.GET)
-	public List<NodeDTO> getNodesByEmployee(@PathVariable Integer nodeId, @PathVariable Integer employeeId){
-	
+
+	@RequestMapping(value = "/{nodeId}/{employeeId}", method = RequestMethod.GET)
+	public List<NodeDTO> getNodesByEmployee(@PathVariable Integer nodeId, @PathVariable Integer employeeId) {
+
 		Employee currentEmployee = employeeRepository.findOne(employeeId);
 		Node topNode = nodeRepository.findOne(nodeId);
-		if(topNode.getEmployee() == currentEmployee){
+		if (topNode.getEmployee() == currentEmployee) {
 			return this.mapper.toNodeListDTO(nodeRepository.findNodesByParentNode(topNode), true);
-		}
-		else{
+		} else {
 			Node currentNode = nodeRepository.findNodeByEmployeeIdAndParentNode(topNode, currentEmployee);
 			return this.mapper.toNodeListDTO(getChildren(currentNode), true);
 
 		}
 	}
-	
-	public void addChildren(Node parentNode){
-		 Team team = teamRepository.findTeamByManager(parentNode.getEmployee());
-		 List<Employee> employees = employeeRepository.findEmployeesByTeam(team);
-		 for (Employee e: employees){
-			 Node newNode = new Node();
-			 newNode.setParentNode(parentNode);
-			 newNode.setLevel(parentNode.getLevel()+1);
-			 newNode.setEmployee(e);
-			 newNode.setOwnBonus(0.0);
-			 newNode.setTeamBonus(0.0);
-			 newNode.setState("");
-			 nodeRepository.saveAndFlush(newNode);
-			 addChildren(newNode);
-		
-		 }
-		
-	}
-	public List<Node> getChildren(Node parentNode){
-		List<Node> nodes = new ArrayList<Node>();
-		Team team = teamRepository.findTeamByManager(parentNode.getEmployee());
-		List<Employee> employees = employeeRepository.findEmployeesByTeam(team);
-		for(Employee e: employees){
-			System.out.println(e.getFirstName());
-			Node node = nodeRepository.findNodeByEmployeeIdAndParentNode(parentNode, e);
-			nodes.add(node);
-		}
-		return nodes;
+
+	@RequestMapping(value = "currNode/{nodeId}/{employeeId}", method = RequestMethod.GET)
+	public NodeDTO getNodeByEmployeeId(@PathVariable Integer nodeId, @PathVariable Integer employeeId) {
+
+		Employee currentEmployee = employeeRepository.findOne(employeeId);
+		Node topNode = nodeRepository.findOne(nodeId);
+		if (topNode.getEmployee() == currentEmployee) {
+			return this.mapper.toNodeDTO(topNode, true);
+		} else
+			return this.mapper.toNodeDTO(nodeRepository.findNodeByEmployeeIdAndParentNode(topNode, currentEmployee),
+					true);
+
 	}
 
+	public void addChildren(Node parentNode) {
+		Team team = teamRepository.findTeamByManager(parentNode.getEmployee());
+		List<Employee> employees = employeeRepository.findEmployeesByTeam(team);
+		for (Employee e : employees) {
+			Node newNode = new Node();
+			newNode.setParentNode(parentNode);
+			newNode.setLevel(parentNode.getLevel() + 1);
+			newNode.setEmployee(e);
+			newNode.setOwnBonus(0.0);
+			newNode.setTeamBonus(0.0);
+			newNode.setState("Initialized");
+			nodeRepository.saveAndFlush(newNode);
+			addChildren(newNode);
+
+		}
+
+	}
+
+	public List<Node> getChildren(Node parentNode) {
+		List<Node> nodes = new ArrayList<Node>();
+		try {
+			Team team = teamRepository.findTeamByManager(parentNode.getEmployee());
+			List<Employee> employees = employeeRepository.findEmployeesByTeam(team);
+			for (Employee e : employees) {
+				System.out.println(e.getFirstName());
+				Node node = nodeRepository.findNodeByEmployeeIdAndParentNode(parentNode, e);
+				nodes.add(node);
+			}
+			return nodes;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/byBonus/{nodeId}", method = RequestMethod.GET)
+	public List<NodeDTO> getAllNodesByBonusList(@PathVariable Integer nodeId) {
+		Node parentNode = this.nodeRepository.findOne(nodeId);
+		System.out.println(parentNode.getNodeId());
+		List<NodeDTO> allNodes = this.mapper.toNodeListDTO(nodeRepository.findNodesByParentNode(parentNode), true);
+		List<NodeDTO> allChildrenNodes  = new ArrayList<NodeDTO>();
+		for (NodeDTO node : allNodes) {
+			node.setParentNode(this.mapper.toNodeDTO(this.nodeRepository.findOne(node.getParentNode().getNodeId()), true));
+			allChildrenNodes.addAll(this.getAllNodesByBonusList(this.mapper.fromNodeDTO(node, true).getNodeId()));
+		}
+		allNodes.addAll(allChildrenNodes);
+		return allNodes;
+	}
 }

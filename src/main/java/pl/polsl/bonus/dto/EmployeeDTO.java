@@ -22,6 +22,11 @@ public class EmployeeDTO {
 	private String officeAddress;
 	@JsonProperty
 	private String emailAddress;
+	@JsonProperty
+	private String login;
+	@JsonProperty
+	private String password;
+	
 	
 	public Integer getEmployeeId() {
 		return employeeId;
@@ -70,6 +75,18 @@ public class EmployeeDTO {
 	}
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+	public String getLogin() {
+		return login;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setLogin(String login) {
+		this.login = login;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

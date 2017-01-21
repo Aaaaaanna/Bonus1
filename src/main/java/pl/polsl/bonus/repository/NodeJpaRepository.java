@@ -15,4 +15,6 @@ public interface NodeJpaRepository extends JpaRepository <Node, Integer>{
 	public List<Node> findNodesByParentNode(@Param("parentNode")Node parentNode);
 	@Query ("SELECT n FROM Node n WHERE n.parentNode = :parentNode and n.employee= :employee" )
 	public Node findNodeByEmployeeIdAndParentNode(@Param("parentNode")Node parentNode, @Param("employee") Employee employee);
+
+	
 }
